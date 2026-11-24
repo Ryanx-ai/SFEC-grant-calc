@@ -1,6 +1,6 @@
 # SFEC Grant Calculator
 
-Client-facing training planner for Vertical Institute. Static, dependency-free browser application with a shared S$10,000 enhanced SFEC tranche, two course enrolment groups, 50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, minimum additional enrolments, cost breakdown, shareable plan URLs and print/PDF layout.
+Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with a shared S$10,000 enhanced SFEC tranche, a choice of two courses, 50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
 
 ## Run
 
@@ -25,8 +25,8 @@ Vercel builds with `npm run build` and serves `dist/`. Connect this repository's
 - Upfront payable = fees after subsidy − SFEC + GST.
 - Additional eligible enrolments = ceiling(remaining credit / net fee per enrolment).
 - Calculations use integer cents. Counts are whole enrolments, clamped to 0–9,999 per field.
-- Credit visualisation allocates to GenAI Training first, then Workflow Automation. This does not change aggregate costs.
-- A fresh full tranche is assumed. Previously consumed balances, absentee payroll, EIS and input GST recovery are outside scope. An enrolment is not necessarily a unique person when a person attends both courses.
+- The interface estimates one selected course at a time. The reusable calculation engine also supports mixed courses under a shared cap.
+- A fresh full tranche is assumed. Previously consumed balances, absentee payroll, EIS and input GST recovery are outside scope. Each pax attends the selected course.
 
 ## Policy basis
 
@@ -39,7 +39,7 @@ Course fees supplied by the project owner. Subsidy and tax treatment match the s
 
 ## Design
 
-Blue-and-white planning workspace: cobalt #304CE8, ink #1D2941, muted #68738A, canvas #F7F9FC, pale blue #EEF2FF, teal #087E8B. Manrope for headings and primary amounts; DM Sans for controls and tables. A two-column desktop layout keeps course inputs beside a live credit meter; mobile stacks the same content. The credit allocation is the primary visual, with course-specific colours and understated surrounding controls. No decorative charts or unrelated marketing sections.
+A white, three-column pricing table with blue SG/PR and foreign headings, subtle dividers and bright blue payable totals follows the supplied reference images. Compact course and subsidy controls, editable pax counts, a one-click tranche target and a slim credit summary fit on a standard laptop screen. DM Sans keeps all labels and figures consistent. Eligibility notes open in a dialog to preserve the single-screen view. Shareable URLs and landscape print styling are included.
 
 ## Validation
 
