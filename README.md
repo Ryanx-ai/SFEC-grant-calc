@@ -19,18 +19,18 @@ Vercel builds with `npm run build` and serves `dist/`. Connect this repository's
 - GenAI Training: S$1,650 per enrolment, excluding GST.
 - GenAI Workflow Automation: S$1,300 per enrolment, excluding GST.
 - SG/PR net fee = full fee × (1 − selected subsidy).
-- SFEC = min(S$10,000, total eligible net fees across both courses).
+- SFEC = min(S$10,000, total eligible net fees × selected 90% / 100% rate).
 - Foreign participants pay full fees and receive no subsidy or SFEC in this model.
 - GST = 9% of full fees, before subsidy.
-- Upfront payable = fees after subsidy − SFEC + GST.
-- Additional eligible enrolments = ceiling(remaining credit / net fee per enrolment).
+- Net cost = fees after subsidy − SFEC + GST. This is also upfront payable under the new scheme; under the old reimbursement scheme, upfront payment is fees after subsidy + GST.
+- Additional eligible enrolments = ceiling(remaining credit / SFEC offset per enrolment).
 - Calculations use integer cents. Counts are whole enrolments, clamped to 0–9,999 per field.
 - The interface estimates one selected course at a time. The reusable calculation engine also supports mixed courses under a shared cap.
 - A fresh full tranche is assumed. Previously consumed balances, absentee payroll, EIS and input GST recovery are outside scope. Each pax attends the selected course.
 
 ## Policy basis
 
-Rules checked 24 November 2026. This planner models the enhanced scheme from 1 December 2026, not the expiring 90% scheme. Eligibility for each company, employee, course and subsidy rate must be confirmed before enrolment.
+Rules checked 24 November 2026. The SFEC toggle supports the old 90% reimbursement scheme (expires 30 November 2026) and the enhanced 100% upfront-offset scheme (from 1 December 2026). Old-scheme highlighted totals show net cost after reimbursement; the summary shows the full upfront payment. Shared URLs include the SFEC rate; existing links default to 100%. Eligibility for each company, employee, course and subsidy rate must be confirmed before enrolment.
 
 - [TPGateway enhanced SFEC FAQ](https://www.tpgateway.gov.sg/faq/skillsfuture-enterprise-credit-enhanced): 100% net training fee offset, GST exclusion, SG/PR eligibility, upfront treatment, wallet cap.
 - [MOM announcement, 3 November 2026](https://www.mom.gov.sg/newsroom/parliament-questions-and-replies/2026/1103-written-answer-to-pq-on-redesigned-skillsfuture-enterprise-credit): fresh S$10,000 wallet and 1 December 2026 launch.

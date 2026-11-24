@@ -76,3 +76,36 @@ test('totals reconcile across representative course mixes', () => {
     for (const amount of [r.offset, r.totalPayable, r.localGst, r.foreignGst]) assert.ok(Number.isSafeInteger(amount));
   }
 });
+
+test('old SFEC reimburses 90% and distinguishes net cost from upfront cash', () => {
+  const r = calculate({ subsidy:70, sfec:90, training:{local:21,foreign:4} });
+  assert.equal(r.offset,935550);
+  assert.equal(r.shortfall,103950);
+  assert.equal(r.localPayable,415800);
+  assert.equal(r.totalPayable,1135200);
+  assert.equal(r.totalUpfront,2070750);
+  assert.equal(r.remaining,64450);
+});
+test('old SFEC thresholds consume the full tranche at both subsidy rates', () => {
+  for (const [subsidy,targets] of [[70,[23,29]],[50,[14,18]]]) {
+    const r = calculate({ subsidy,sfec:90 });
+    assert.deepEqual(r.rows.map(row=>row.target),targets);
+    for (const row of r.rows) {
+      const before=calculate({ subsidy,sfec:90,[row.id]:{local:row.target-1} });
+      const after=calculate({ subsidy,sfec:90,[row.id]:{local:row.target} });
+      assert.ok(before.offset<TRANCHE);
+      assert.equal(after.offset,TRANCHE);
+      assert.equal(after.totalUpfront-after.totalPayable,TRANCHE);
+    }
+  }
+});
+test('new scheme remains default and foreign pricing is unaffected by SFEC rate', () => {
+  const input={subsidy:50,automation:{local:1,foreign:2}};
+  const old=calculate({...input,sfec:90});
+  const current=calculate(input);
+  assert.equal(current.sfec,100);
+  assert.equal(current.totalUpfront,current.totalPayable);
+  assert.equal(old.foreignPayable,current.foreignPayable);
+  assert.equal(old.offset,58500);
+  assert.equal(old.localPayable,18200);
+});

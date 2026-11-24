@@ -7,7 +7,8 @@ let announceTimer;
 function render() {
   const course = COURSES.find(c => c.id === $('course').value);
   const subsidy = Number(document.querySelector('[name="subsidy"]:checked').value);
-  result = calculate({ subsidy, [course.id]: { local: $('local-pax').value, foreign: $('foreign-pax').value } });
+  const sfec = Number(document.querySelector('[name="sfec"]:checked').value);
+  result = calculate({ subsidy, sfec, [course.id]: { local: $('local-pax').value, foreign: $('foreign-pax').value } });
   const r = result;
   const row = r.rows.find(c => c.id === course.id);
   const values = { 'target-pax':row.target, 'local-gross':money(r.localGross), 'foreign-gross':money(r.foreignGross),
@@ -15,7 +16,13 @@ function render() {
     'net-per-pax':`${money(row.netPerPax)} / pax`, 'sfec-offset':r.offset ? `−${money(r.offset)}` : money(0),
     'local-after':money(r.shortfall), 'foreign-after':money(r.foreignGross), 'local-gst':money(r.localGst),
     'foreign-gst':money(r.foreignGst), 'local-payable':money(r.localPayable), 'foreign-payable':money(r.foreignPayable),
-    'credit-used':money(r.offset), 'credit-remaining':`${money(r.remaining)} remaining`, 'total-payable':money(r.totalPayable) };
+    'credit-used':money(r.offset), 'credit-remaining':`${money(r.remaining)} remaining`, 'total-payable':money(r.totalUpfront),
+    'sfec-label':`SFEC ${sfec === 90 ? 'claim' : 'offset'} (${sfec}%)`,
+    'after-label':sfec === 90 ? 'After SFEC claim' : 'After SFEC offset',
+    'payable-label':sfec === 90 ? 'Net payable' : 'Upfront payable',
+    'payable-note':sfec === 90 ? 'After reimbursement, incl. GST' : 'Including GST',
+    'total-label':sfec === 90 ? 'Total upfront' : 'Total payable',
+    'scheme-note':sfec === 90 ? 'Old SFEC: reimbursed after payment; expires 30 Nov 2026. Assumes S$10,000 available and eligibility.' : 'Enhanced SFEC from 1 Dec 2026. Assumes a fresh S$10,000 balance and eligible courses & employees.' };
   for (const [id,value] of Object.entries(values)) $(id).textContent = value;
   document.querySelectorAll('.per-pax').forEach(el => el.textContent = `${money(row.fee)} / pax`);
   $('fill-target').innerHTML = `Use ${row.target} pax <span aria-hidden="true">↗</span>`;
@@ -28,11 +35,11 @@ function render() {
     button.disabled = Number(button.dataset.step) < 0 ? count === 0 : count === MAX_PAX;
   }
   clearTimeout(announceTimer);
-  announceTimer = setTimeout(() => { $('live-summary').textContent = `${money(r.offset)} SFEC used. ${money(r.remaining)} remaining. Total payable ${money(r.totalPayable)}.`; },350);
+  announceTimer = setTimeout(() => { $('live-summary').textContent = `${money(r.offset)} SFEC used. ${money(r.remaining)} remaining. Total upfront ${money(r.totalUpfront)}.`; },350);
 }
 function saveUrl() {
   const url = new URL(location.href);
-  url.search = new URLSearchParams({ course:$('course').value, subsidy:result.subsidy, local:normalizePax($('local-pax').value), foreign:normalizePax($('foreign-pax').value) }).toString();
+  url.search = new URLSearchParams({ course:$('course').value, subsidy:result.subsidy, sfec:result.sfec, local:normalizePax($('local-pax').value), foreign:normalizePax($('foreign-pax').value) }).toString();
   history.replaceState(null,'',url);
 }
 function update() { render(); saveUrl(); }
@@ -42,6 +49,8 @@ function load() {
   $('course').value = course;
   const subsidy = params.get('subsidy') === '50' ? '50' : '70';
   document.querySelector(`[name="subsidy"][value="${subsidy}"]`).checked = true;
+  const sfec = params.get('sfec') === '90' ? '90' : '100';
+  document.querySelector(`[name="sfec"][value="${sfec}"]`).checked = true;
   $('local-pax').value = normalizePax(params.get('local') ?? params.get(`${course}-local`) ?? 21);
   $('foreign-pax').value = normalizePax(params.get('foreign') ?? params.get(`${course}-foreign`) ?? 4);
   render();
@@ -55,7 +64,7 @@ for (const id of ['local-pax','foreign-pax']) {
   $(id).addEventListener('blur',() => { $(id).value = normalizePax($(id).value); update(); });
 }
 $('course').addEventListener('change',update);
-for (const input of document.querySelectorAll('[name="subsidy"]')) input.addEventListener('change',update);
+for (const input of document.querySelectorAll('[name="subsidy"], [name="sfec"]')) input.addEventListener('change',update);
 for (const button of document.querySelectorAll('[data-step]')) button.addEventListener('click',() => {
   const input = $(button.dataset.input); input.value = normalizePax(normalizePax(input.value) + Number(button.dataset.step)); update();
 });
