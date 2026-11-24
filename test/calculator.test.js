@@ -193,3 +193,54 @@ test('0% subsidy respects reduced and zero SFEC balances', () => {
   }
   assert.equal(calculate({}).subsidy,70);
 });
+
+test('eligible older citizens receive 20 percentage points off full fees', () => {
+  for (const [id,fee] of [['training',165000],['automation',130000]]) for (const subsidy of [50,70]) for (const sfec of [90,100]) {
+    const r=calculate({subsidy,sfec,[id]:{local:10,localOlder:7,eligibleOlder:5,foreign:4,foreignOlder:3}});
+    const row=r.rows.find(c=>c.id===id);
+    assert.equal(row.localNet,fee*(100-subsidy)/100*10-fee*.2*5);
+    assert.equal(row.ageSavings,fee);
+    assert.equal(r.offset,Math.min(TRANCHE,Math.round(row.localNet*sfec/100)));
+    assert.equal(r.localGst,fee*.09*10);
+    assert.equal(r.foreignPayable,fee*4*1.09);
+    assert.deepEqual(row.localAges,{younger:3,older:7,eligible:5});
+    assert.deepEqual(row.foreignAges,{younger:1,older:3,eligible:0});
+  }
+});
+test('older PRs, foreign participants and zero-baseline plans get no age top-up', () => {
+  const base=calculate({training:{local:5,foreign:5}});
+  const older=calculate({training:{local:5,localOlder:5,eligibleOlder:0,foreign:5,foreignOlder:5}});
+  assert.equal(older.totalPayable,base.totalPayable);
+  const zero=calculate({subsidy:0,training:{local:5,localOlder:5,eligibleOlder:5}});
+  assert.equal(zero.localNet,825000);
+  assert.equal(zero.rows[0].ageSavings,0);
+});
+test('invalid age counts are clamped to each participant total', () => {
+  const r=calculate({training:{local:3,localOlder:8,eligibleOlder:9,foreign:2,foreignOlder:7},automation:{local:1,localOlder:-1,eligibleOlder:5}});
+  assert.deepEqual(r.rows[0].localAges,{younger:0,older:3,eligible:3});
+  assert.deepEqual(r.rows[0].foreignAges,{younger:0,older:2,eligible:0});
+  assert.deepEqual(r.rows[1].localAges,{younger:1,older:0,eligible:0});
+});
+test('all-older cohort targets account for the smaller net fee', () => {
+  for (const [sfec,targets] of [[100,[61,77]],[90,[68,86]]]) {
+    const r=calculate({sfec,subsidy:70,training:{local:10,localOlder:10,eligibleOlder:10},automation:{local:10,localOlder:10,eligibleOlder:10}});
+    assert.deepEqual(r.rows.map(row=>row.target),targets);
+  }
+});
+test('mixed-age targets reach balance and preserve whole-person age proportions', () => {
+  for (const sfec of [90,100]) for (const subsidy of [0,50,70]) for (const balance of [0,1,123456,TRANCHE]) {
+    for (const [local,older,eligible] of [[0,0,0],[10,7,5],[21,15,11],[3,3,3]]) {
+      const r=calculate({sfec,subsidy,balance,training:{local,localOlder:older,eligibleOlder:eligible}});
+      const row=r.rows[0];
+      const target=row.target;
+      const next=calculate({sfec,subsidy,balance,training:{local:target,localOlder:row.targetAges.older,eligibleOlder:row.targetAges.eligible}});
+      assert.equal(next.offset,balance);
+      assert.equal(row.targetAges.younger+row.targetAges.older,target);
+      assert.ok(row.targetAges.eligible<=row.targetAges.older);
+      if(target>0) {
+        const before=calculate({sfec,subsidy,balance,training:{local:target-1,localOlder:local?Math.floor((target-1)*older/local):0,eligibleOlder:local?Math.floor((target-1)*eligible/local):0}});
+        assert.ok(before.offset<balance);
+      }
+    }
+  }
+});
