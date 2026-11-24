@@ -10,3 +10,8 @@
 .sfec-control .segmented span{min-width:100px;font-size:13px}.course-control{min-width:0}
 @media(max-width:700px){.controls{flex-wrap:wrap;gap:10px 15px}.course-control{flex-basis:100%}.subsidy-control{flex:1}.segmented label{flex:1}.sfec-control{flex:1.5}.sfec-control .segmented span{min-width:0;padding:0 9px;font-size:12px}}
 @media(max-width:480px){.controls{gap:8px 12px}.sfec-control .segmented span{font-size:11px}.payable-row th small{font-size:8px}}
+
+.balance-control{flex:0 0 158px}.balance-control label{display:block;font-size:11px;font-weight:600;margin-bottom:4px}.balance-input{display:flex;align-items:center;gap:6px;background:white;border:1px solid #cfd8fa;border-radius:5px;padding:5px 9px;color:var(--blue)}.balance-input>span{font-size:13px}.balance-input input{width:100%;min-width:0;border:0;background:transparent;font-weight:650;font-size:15px;color:var(--blue);font-variant-numeric:tabular-nums;appearance:textfield;-moz-appearance:textfield}.balance-input input::-webkit-inner-spin-button,.balance-input input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.target-copy{flex:1;margin-left:7px}.tranche .target-copy{max-width:none}.tranche button:disabled:hover{background:white}
+@media(max-width:700px){.balance-control{flex-basis:140px}.target-copy{margin-left:0;font-size:12px}}
+@media(max-width:480px){.balance-control{flex-basis:114px}.balance-control label{font-size:9px;line-height:1.25}.balance-input{gap:3px;padding:5px 6px}.balance-input input{font-size:12px}.balance-input>span{font-size:11px}.target-copy{font-size:10px}.target-copy strong,.target-copy>span{display:block}.tranche{gap:8px}.tranche button{padding:7px 6px}}
+@media(max-width:480px){main{margin-bottom:8px}}

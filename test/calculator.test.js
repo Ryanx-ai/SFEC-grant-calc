@@ -109,3 +109,59 @@ test('new scheme remains default and foreign pricing is unaffected by SFEC rate'
   assert.equal(old.offset,58500);
   assert.equal(old.localPayable,18200);
 });
+
+test('partly used balance caps new-scheme claims and changes pax target', () => {
+  const r = calculate({ balance:250000, subsidy:70, training:{local:6,foreign:2} });
+  assert.equal(r.rows[0].target,6);
+  assert.equal(r.offset,250000);
+  assert.equal(r.shortfall,47000);
+  assert.equal(r.localPayable,136100);
+  assert.equal(r.foreignPayable,359700);
+  assert.equal(r.totalUpfront,495800);
+  assert.equal(r.remaining,0);
+});
+test('old scheme uses reduced balance while preserving upfront payment', () => {
+  const r = calculate({ balance:250000, sfec:90, subsidy:70, training:{local:6} });
+  assert.equal(r.rows[0].target,6);
+  assert.equal(r.offset,250000);
+  assert.equal(r.totalPayable,136100);
+  assert.equal(r.totalUpfront,386100);
+  const under = calculate({ balance:250000, sfec:90, training:{local:5} });
+  assert.equal(under.offset,222750);
+  assert.equal(under.remaining,27250);
+});
+test('zero balance leaves all fees payable and has a finite empty meter', () => {
+  for (const sfec of [90,100]) {
+    const r=calculate({balance:0,sfec,training:{local:1,foreign:1}});
+    assert.equal(r.offset,0);
+    assert.equal(r.remaining,0);
+    assert.equal(r.percentage,0);
+    assert.equal(r.totalPayable,r.totalUpfront);
+    assert.equal(r.localPayable,64350);
+    assert.ok(r.rows.every(row=>row.target===0));
+    assert.ok(r.suggestions.every(row=>row.additional===0));
+  }
+});
+test('fractional-dollar balances preserve cents and normalize out-of-range values', () => {
+  const r=calculate({balance:123456,training:{local:3}});
+  assert.equal(r.balance,123456);
+  assert.equal(r.offset,123456);
+  assert.equal(r.localPayable,69594);
+  assert.equal(calculate({balance:-1}).balance,0);
+  assert.equal(calculate({balance:1000001}).balance,TRANCHE);
+  assert.equal(calculate({balance:NaN}).balance,0);
+  assert.equal(calculate({balance:123456.49}).balance,123456);
+  assert.equal(calculate({}).balance,TRANCHE);
+});
+test('reduced-balance targets are minimal for every course and both rates', () => {
+  for (const balance of [1,44550,49500,123456,250000,999999]) for (const sfec of [90,100]) for (const subsidy of [50,70]) {
+    const r=calculate({balance,sfec,subsidy});
+    for (const row of r.rows) {
+      assert.ok((row.target-1)*row.offsetPerPax<balance);
+      assert.ok(row.target*row.offsetPerPax>=balance);
+      const filled=calculate({balance,sfec,subsidy,[row.id]:{local:row.target}});
+      assert.equal(filled.offset,balance);
+      assert.equal(filled.percentage,100);
+    }
+  }
+});
