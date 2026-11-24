@@ -195,7 +195,7 @@ test('0% subsidy respects reduced and zero SFEC balances', () => {
 });
 
 test('eligible older citizens receive 20 percentage points off full fees', () => {
-  for (const [id,fee] of [['training',165000],['automation',130000]]) for (const subsidy of [50,70]) for (const sfec of [90,100]) {
+  for (const [id,fee] of [['training',165000],['automation',130000]]) for (const subsidy of [50]) for (const sfec of [90,100]) {
     const r=calculate({subsidy,sfec,[id]:{local:10,localOlder:7,eligibleOlder:5,foreign:4,foreignOlder:3}});
     const row=r.rows.find(c=>c.id===id);
     assert.equal(row.localNet,fee*(100-subsidy)/100*10-fee*.2*5);
@@ -222,7 +222,7 @@ test('invalid age counts are clamped to each participant total', () => {
   assert.deepEqual(r.rows[1].localAges,{younger:1,older:0,eligible:0});
 });
 test('all-older cohort targets account for the smaller net fee', () => {
-  for (const [sfec,targets] of [[100,[61,77]],[90,[68,86]]]) {
+  for (const [sfec,targets] of [[100,[21,26]],[90,[23,29]]]) {
     const r=calculate({sfec,subsidy:70,training:{local:10,localOlder:10,eligibleOlder:10},automation:{local:10,localOlder:10,eligibleOlder:10}});
     assert.deepEqual(r.rows.map(row=>row.target),targets);
   }
@@ -242,5 +242,17 @@ test('mixed-age targets reach balance and preserve whole-person age proportions'
         assert.ok(before.offset<balance);
       }
     }
+  }
+});
+
+ test('70% funding is the cap even with eligible citizens aged 40+', () => {
+  for (const id of ['training','automation']) for (const sfec of [90,100]) for (const subsidy of [0,70]) {
+    const base=calculate({subsidy,sfec,[id]:{local:10,foreign:4}});
+    const older=calculate({subsidy,sfec,[id]:{local:10,localOlder:10,eligibleOlder:10,foreign:4}});
+    assert.equal(older.enhancedSubsidy,subsidy);
+    assert.equal(older.localNet,base.localNet);
+    assert.equal(older.totalPayable,base.totalPayable);
+    assert.deepEqual(older.rows.map(r=>r.target),base.rows.map(r=>r.target));
+    assert.equal(older.rows.find(r=>r.id===id).ageSavings,0);
   }
 });

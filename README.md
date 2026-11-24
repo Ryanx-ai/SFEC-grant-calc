@@ -19,7 +19,7 @@ Vercel builds with `npm run build` and serves `dist/`. Connect this repository's
 - GenAI Training: S$1,650 per enrolment, excluding GST.
 - GenAI Workflow Automation: S$1,300 per enrolment, excluding GST.
 - SG/PR net fee = full fee × (1 − selected subsidy).
-- Age groups (under 40 / 40+) always sum to each SG/PR or foreign total. Eligible Singapore Citizens within the older SG/PR group receive 20 percentage points above the selected baseline: 50% becomes 70%, 70% becomes 90%. No top-up applies at 0% baseline. Older PRs and foreigners retain their usual pricing. Eligibility must be confirmed and enhanced subsidies must not be double-counted.
+- At 50% SSG funding only, eligible Singapore Citizens aged 40+ receive 20 additional percentage points, capped at 70% total course subsidy. The two controls are “Under 40 / PR” (baseline funding, including PRs of any age) and “Citizens 40 & above”; their counts sum to SG/PR pax. Foreign participants have no age controls. At 0% and 70%, no top-up applies and age controls are hidden.
 - Mixed local net fees = baseline net fee × non-enhanced pax + enhanced net fee × eligible older pax. GST stays on full fees.
 - SFEC = min(available balance, total eligible net fees × selected 90% / 100% rate).
 - Foreign participants pay full fees and receive no subsidy or SFEC in this model.
@@ -43,7 +43,7 @@ Course fees supplied by the project owner. Subsidy and tax treatment match the s
 
 A white, three-column pricing table with blue SG/PR and foreign headings, subtle dividers and bright blue payable totals follows the supplied reference images. Compact course and subsidy controls, editable SFEC balance and pax counts, a one-click tranche target and a slim credit summary fit on a standard laptop screen. DM Sans keeps all labels and figures consistent. Eligibility notes open in a dialog to preserve the single-screen view. Shareable URLs and landscape print styling are included.
 
-The age editor is collapsed by default behind “Set ages”. Its summary shows the eligible older count when the benefit is active. Share links retain all counts; old links default to no age top-up. Print output includes the breakdown even when collapsed.
+The age editor is collapsed by default behind “Set ages”. Its summary shows the eligible older count when the benefit is active. Share links retain all counts; old links default to no age top-up. Print output includes the breakdown at 50% funding even when collapsed. New share links store citizens40; legacy eligibleOlder counts are migrated without giving older PRs a top-up.
 
 ## Validation
 

@@ -39,7 +39,7 @@ export function calculate(input) {
   const balance = normalizeBalance(input.balance);
   const subsidy = input.subsidy === 0 || input.subsidy === '0' ? 0 : Number(input.subsidy) === 50 ? 50 : 70;
   const sfec = Number(input.sfec) === 90 ? 90 : 100;
-  const enhancedSubsidy = subsidy ? subsidy + 20 : 0;
+  const enhancedSubsidy = subsidy === 50 ? 70 : subsidy;
   const rows = COURSES.map(course => {
     const local = normalizePax(input[course.id]?.local ?? 0);
     const foreign = normalizePax(input[course.id]?.foreign ?? 0);

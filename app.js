@@ -8,23 +8,20 @@ function render() {
   const course = COURSES.find(c => c.id === $('course').value);
   const subsidy = Number(document.querySelector('[name="subsidy"]:checked').value);
   const sfec = Number(document.querySelector('[name="sfec"]:checked').value);
-  result = calculate({ subsidy, sfec, balance:normalizeBalance(Number($('sfec-balance').value) * 100), [course.id]: { local: $('local-pax').value, foreign: $('foreign-pax').value, localOlder:$('local-older').value, eligibleOlder:$('eligible-older').value, foreignOlder:$('foreign-older').value } });
+  result = calculate({ subsidy, sfec, balance:normalizeBalance(Number($('sfec-balance').value) * 100), [course.id]: { local: $('local-pax').value, foreign: $('foreign-pax').value, localOlder:$('local-older').value, eligibleOlder:$('local-older').value } });
   const r = result;
   const row = r.rows.find(c => c.id === course.id);
-  for (const group of ['local','foreign']) {
-    const ages = row[group + 'Ages'];
-    $(group + '-younger').value = ages.younger;
-    $(group + '-older').value = ages.older;
-    $(group + '-younger').max = row[group];
-    $(group + '-older').max = row[group];
-    $(group + '-age-total').textContent = `${ages.younger} + ${ages.older} = ${row[group]} pax`;
-  }
-  $('eligible-older').value = row.localAges.eligible;
-  $('eligible-older').max = row.localAges.older;
-  $('eligible-older').disabled = row.localAges.older === 0 || subsidy === 0;
-  const ageBenefit = row.localAges.eligible > 0 && subsidy > 0;
-  $('age-benefit-note').textContent = subsidy === 0 ? '0% baseline: no age top-up applies.' : 'Extra 20 percentage points for eligible Singapore Citizens aged 40+.';
-  $('age-toggle-label').textContent = ageBenefit ? `Ages · ${row.localAges.eligible} eligible` : (row.localAges.older || row.foreignAges.older ? 'Edit ages' : 'Set ages');
+  $('local-younger').value = row.localAges.younger;
+  $('local-older').value = row.localAges.older;
+  $('local-younger').max = row.local;
+  $('local-older').max = row.local;
+  const ageAvailable = subsidy === 50;
+  const ageBenefit = row.localAges.eligible > 0 && ageAvailable;
+  $('age-toggle').hidden = !ageAvailable;
+  if (!ageAvailable) $('age-toggle').setAttribute('aria-expanded','false');
+  $('age-row').hidden = !ageAvailable || $('age-toggle').getAttribute('aria-expanded') !== 'true';
+  $('age-row').classList.toggle('age-available',ageAvailable);
+  $('age-toggle-label').textContent = ageBenefit ? `Ages · ${row.localAges.eligible} citizens 40+` : 'Set ages';
   const values = { 'target-pax':row.target, 'target-description':r.balance ? ` to use ${money(r.balance)}${ageBenefit ? ' at this age mix' : ' balance'}` : ' · No SFEC credit available', 'balance-cap':`Up to ${money(r.balance)} available`, 'local-gross':money(r.localGross), 'foreign-gross':money(r.foreignGross),
     'local-net':money(r.localNet), 'foreign-net':money(r.foreignGross), 'subsidy-label':ageBenefit ? `${subsidy}% + 20 pts for ${row.localAges.eligible} eligible SCs` : `${subsidy}% subsidy`,
     'net-per-pax':ageBenefit ? `Base ${money(row.netPerPax)} · Eligible 40+ ${money(row.enhancedNetPerPax)} / pax` : `${money(row.netPerPax)} / pax`, 'sfec-offset':r.offset ? `−${money(r.offset)}` : money(0),
@@ -41,21 +38,21 @@ function render() {
   document.querySelectorAll('.per-pax').forEach(el => el.textContent = `${money(row.fee)} / pax`);
   $('fill-target').innerHTML = r.balance ? `Use ${row.target} pax <span aria-hidden="true">↗</span>` : 'No credit';
   $('fill-target').disabled = r.balance === 0;
-  $('fill-target').title = `${row.targetAges.younger} under 40, ${row.targetAges.older} aged 40+, including ${row.targetAges.eligible} eligible Singapore Citizens`;
+  $('fill-target').title = `${row.targetAges.younger} at baseline subsidy, ${row.targetAges.eligible} citizens aged 40+`;
   $('fill-target').setAttribute('aria-label', `Set SG/PR participants to ${row.target} to use the ${money(r.balance)} balance`);
   $('meter-fill').style.width = `${r.percentage}%`;
   document.querySelector('[role="progressbar"]').setAttribute('aria-valuenow',r.percentage);
   document.querySelector('[role="progressbar"]').setAttribute('aria-valuetext',`${money(r.offset)} of ${money(r.balance)} available credit used in this plan`);
   for (const button of document.querySelectorAll('[data-step]')) {
     const count = normalizePax($(button.dataset.input).value);
-    button.disabled = Number(button.dataset.step) < 0 ? count === 0 : count === MAX_PAX;
+    button.disabled = Number(button.dataset.step) < 0 ? count === 0 : count >= Number($(button.dataset.input).max || MAX_PAX);
   }
   clearTimeout(announceTimer);
   announceTimer = setTimeout(() => { $('live-summary').textContent = `${money(r.offset)} SFEC used. ${money(r.remaining)} remaining. Total upfront ${money(r.totalUpfront)}.`; },350);
 }
 function saveUrl() {
   const url = new URL(location.href);
-  url.search = new URLSearchParams({ course:$('course').value, subsidy:result.subsidy, sfec:result.sfec, balance:(result.balance / 100).toFixed(2), local:normalizePax($('local-pax').value), foreign:normalizePax($('foreign-pax').value), localOlder:$('local-older').value, eligibleOlder:$('eligible-older').value, foreignOlder:$('foreign-older').value }).toString();
+  url.search = new URLSearchParams({ course:$('course').value, subsidy:result.subsidy, sfec:result.sfec, balance:(result.balance / 100).toFixed(2), local:normalizePax($('local-pax').value), foreign:normalizePax($('foreign-pax').value), citizens40:$('local-older').value }).toString();
   history.replaceState(null,'',url);
 }
 function update() { render(); saveUrl(); }
@@ -70,9 +67,7 @@ function load() {
   document.querySelector(`[name="sfec"][value="${sfec}"]`).checked = true;
   $('local-pax').value = normalizePax(params.get('local') ?? params.get(`${course}-local`) ?? 21);
   $('foreign-pax').value = normalizePax(params.get('foreign') ?? params.get(`${course}-foreign`) ?? 4);
-  $('local-older').value = normalizePax(params.get('localOlder'));
-  $('eligible-older').value = normalizePax(params.get('eligibleOlder'));
-  $('foreign-older').value = normalizePax(params.get('foreignOlder'));
+  $('local-older').value = normalizePax(params.get('citizens40') ?? params.get('eligibleOlder'));
   render();
 }
 function toast(message) {
@@ -84,15 +79,15 @@ $('age-toggle').addEventListener('click',() => {
   $('age-toggle').setAttribute('aria-expanded',expanded);
   $('age-row').hidden = !expanded;
 });
-for (const group of ['local','foreign']) {
-  $(group + '-younger').addEventListener('input',() => {
-    const total=normalizePax($(group + '-pax').value);
-    $(group + '-older').value = total - Math.min(total,normalizePax($(group + '-younger').value));
-    update();
-  });
-  $(group + '-older').addEventListener('input',update);
+function setAgeCount(id, value) {
+  const total = normalizePax($('local-pax').value);
+  const count = Math.min(total,normalizePax(value));
+  $('local-older').value = id === 'local-younger' ? total - count : count;
+  update();
 }
-$('eligible-older').addEventListener('input',update);
+for (const id of ['local-younger','local-older']) {
+  $(id).addEventListener('input',() => setAgeCount(id,$(id).value));
+}
 for (const id of ['local-pax','foreign-pax']) {
   $(id).addEventListener('input',() => { if ($(id).value !== '') $(id).value = normalizePax($(id).value); update(); });
   $(id).addEventListener('blur',() => { $(id).value = normalizePax($(id).value); update(); });
@@ -106,14 +101,16 @@ $('sfec-balance').addEventListener('blur',() => { $('sfec-balance').value = (res
 $('course').addEventListener('change',update);
 for (const input of document.querySelectorAll('[name="subsidy"], [name="sfec"]')) input.addEventListener('change',update);
 for (const button of document.querySelectorAll('[data-step]')) button.addEventListener('click',() => {
-  const input = $(button.dataset.input); input.value = normalizePax(normalizePax(input.value) + Number(button.dataset.step)); update();
+  const input = $(button.dataset.input);
+  const value = normalizePax(normalizePax(input.value) + Number(button.dataset.step));
+  if (input.id === 'local-younger' || input.id === 'local-older') setAgeCount(input.id,value);
+  else { input.value = value; update(); }
 });
 $('fill-target').addEventListener('click',() => {
   if (!result.balance) return;
   const row = result.rows.find(row => row.id === $('course').value);
   const target = row.target;
   $('local-older').value = row.targetAges.older;
-  $('eligible-older').value = row.targetAges.eligible;
   $('local-pax').value = target; update(); toast(`Set to ${target} SG/PR pax. ${money(result.balance)} available credit fully used.`);
 });
 $('share').addEventListener('click',async () => {
