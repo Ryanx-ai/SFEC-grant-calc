@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en-SG">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#304ce8">
+  <meta name="description" content="Plan your team's GenAI training with the enhanced S$10,000 SFEC tranche. Compare 50% and 70% subsidies, SG/PR and foreign participant fees, and upfront costs.">
+  <title>SFEC Grant Calculator | Vertical Institute</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3M7 14h10v7H7zM17 11h.01"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M9 15l6-6M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 10a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-1 1" transform="translate(1 0) scale(.9)"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/></symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h7a2 2 0 0 1 2 2v7M6 9v9h9"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </defs></svg>
+  <a class="skip-link" href="#calculator">Skip to calculator</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Vertical Institute calculator home"><span class="brand-mark" aria-hidden="true">VI<span>↗</span></span><span>Vertical<br>Institute</span></a>
+    <div class="header-divider"></div><span class="header-label">Business training tools</span>
+    <span class="edition"><span></span> Enhanced SFEC · Dec 2026</span>
+  </header>
+  <main>
+    <section class="intro">
+      <div><h1>SFEC Grant Calculator<span>.</span></h1><p>Turn your S$10,000 credit into a plan for your team.</p></div>
+      <div class="page-actions"><button class="quiet-button" id="share" aria-label="Share plan"><svg class="icon" aria-hidden="true"><use href="#i-share"/></svg><span>Share plan</span></button><button class="quiet-button" id="print" aria-label="Print or save as PDF"><svg class="icon" aria-hidden="true"><use href="#i-print"/></svg><span>Print / PDF</span></button></div>
+    </section>
+    <div class="workspace" id="calculator">
+      <section class="setup" aria-labelledby="setup-title">
+        <div class="section-heading"><h2 id="setup-title">Build your training plan</h2><button class="text-button" id="reset">Reset</button></div>
+        <div class="subsidy-row"><div><h3>Course subsidy</h3><p>For eligible Singaporeans & PRs</p></div><fieldset class="segmented"><legend class="sr-only">Course subsidy</legend><label><input type="radio" name="subsidy" value="50"><span>50%</span></label><label><input type="radio" name="subsidy" value="70" checked><span>70%</span></label></fieldset></div>
+        <div class="courses">
+          <article class="course" data-course="training">
+            <div class="course-title"><span class="course-icon"><svg class="icon"><use href="#i-spark"/></svg></span><div><h3>GenAI Training</h3><p>S$1,650 <span>/ pax before subsidy & GST</span></p></div></div>
+            <div class="pax-grid">
+              <div><label for="training-local">Singaporean / PR</label><div class="stepper"><button type="button" data-step="-1" data-input="training-local" aria-label="Remove one GenAI Training SG/PR participant">−</button><input id="training-local" type="number" min="0" max="9999" step="1" value="10" inputmode="numeric"><button type="button" data-step="1" data-input="training-local" aria-label="Add one GenAI Training SG/PR participant">+</button></div><p><strong id="training-net">S$495</strong> after subsidy / pax</p></div>
+              <div><label for="training-foreign">Foreigner / Work pass</label><div class="stepper"><button type="button" data-step="-1" data-input="training-foreign" aria-label="Remove one GenAI Training foreign participant">−</button><input id="training-foreign" type="number" min="0" max="9999" step="1" value="0" inputmode="numeric"><button type="button" data-step="1" data-input="training-foreign" aria-label="Add one GenAI Training foreign participant">+</button></div><p><strong>S$1,650</strong> / pax before GST</p></div>
+            </div>
+          </article>
+          <article class="course" data-course="automation">
+            <div class="course-title"><span class="course-icon automation"><svg class="icon"><use href="#i-flow"/></svg></span><div><h3>GenAI Workflow Automation</h3><p>S$1,300 <span>/ pax before subsidy & GST</span></p></div></div>
+            <div class="pax-grid">
+              <div><label for="automation-local">Singaporean / PR</label><div class="stepper"><button type="button" data-step="-1" data-input="automation-local" aria-label="Remove one Workflow Automation SG/PR participant">−</button><input id="automation-local" type="number" min="0" max="9999" step="1" value="0" inputmode="numeric"><button type="button" data-step="1" data-input="automation-local" aria-label="Add one Workflow Automation SG/PR participant">+</button></div><p><strong id="automation-net">S$390</strong> after subsidy / pax</p></div>
+              <div><label for="automation-foreign">Foreigner / Work pass</label><div class="stepper"><button type="button" data-step="-1" data-input="automation-foreign" aria-label="Remove one Workflow Automation foreign participant">−</button><input id="automation-foreign" type="number" min="0" max="9999" step="1" value="0" inputmode="numeric"><button type="button" data-step="1" data-input="automation-foreign" aria-label="Add one Workflow Automation foreign participant">+</button></div><p><strong>S$1,300</strong> / pax before GST</p></div>
+            </div>
+          </article>
+        </div>
+        <div class="setup-note"><svg class="icon"><use href="#i-info"/></svg><p>Add either or both courses. Each count is a course enrolment; the same person can attend both.</p></div>
+      </section>
+      <section class="results" aria-labelledby="results-title">
+        <div class="credit-panel">
+          <div class="credit-heading"><h2 id="results-title">Your SFEC credit</h2><span class="offset-badge">100% offset</span></div>
+          <div class="credit-amount"><span id="credit-used">S$4,950</span><span>of S$10,000 used</span></div>
+          <div class="meter-label"><span id="utilisation">49.5% utilised</span><span id="credit-status">Room to grow your team</span></div>
+          <div class="credit-meter" role="progressbar" aria-label="SFEC credit used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="49.5"><div id="meter-training"></div><div id="meter-automation"></div></div>
+          <div class="legend"><span><i class="training-dot"></i>GenAI Training</span><span><i class="automation-dot"></i>Workflow Automation</span></div>
+          <div class="credit-footer"><span>Credit remaining</span><strong id="credit-remaining">S$5,050</strong></div>
+        </div>
+        <div class="target-panel"><div class="section-heading"><h3 id="target-title">Make the most of your tranche</h3><svg class="icon"><use href="#i-arrow"/></svg></div><p id="target-description">To use the remaining credit, add eligible SG/PR enrolments:</p>
+          <div class="target-options" id="target-options"></div>
+          <p class="target-note" id="target-note">Final enrolment may be partially covered.</p>
+        </div>
+        <div class="payable-panel"><div><h3>Total upfront payable</h3><p>After subsidy & SFEC, including GST</p></div><strong id="total-payable">S$1,485</strong></div>
+        <p class="results-note" id="results-note">10 enrolments in your plan</p>
+      </section>
+    </div>
+    <section class="breakdown" aria-labelledby="breakdown-title">
+      <div class="section-heading"><div><h2 id="breakdown-title">The numbers, clearly.</h2><p>A complete view of your team's training investment.</p></div><span class="currency-label">All amounts in SGD</span></div>
+      <div class="table-scroll"><table><thead><tr><th scope="col">Cost breakdown</th><th scope="col">Singaporean / PR</th><th scope="col">Foreigner / Work pass</th><th scope="col">Total</th></tr></thead><tbody id="breakdown-body"></tbody></table></div>
+    </section>
+    <section class="reference-panel" aria-labelledby="reference-title"><div><h2 id="reference-title">How many pax to use S$10,000?</h2><p>Starting with a fresh tranche, if everyone takes the same course.</p></div><div class="reference-options" id="reference-options"></div></section>
+    <details class="assumptions"><summary>Calculation notes & eligibility <svg class="icon"><use href="#i-info"/></svg></summary><div class="assumptions-content"><p>This is a planning estimate for the enhanced SFEC from <strong>1 December 2026</strong>, assuming a fresh S$10,000 balance and eligible employer-sponsored courses and employees. Confirm company and course eligibility before enrolment.</p><ul><li>SG/PR subsidy = full course fee × selected 50% or 70% rate. The selected rate assumes eligibility; it is not an eligibility check.</li><li>SFEC offsets 100% of eligible fees after subsidy, capped at S$10,000 across both courses. Foreign participants receive no subsidy or SFEC in this calculator.</li><li>GST is 9% of the full course fee before subsidy. Upfront payable = fees after subsidy − SFEC offset + GST. GST remains payable; any input tax recovery depends on the business's eligibility.</li><li>Course prices are S$1,650 for GenAI Training and S$1,300 for GenAI Workflow Automation, excluding GST. Absentee payroll, EIS and other benefits are not included.</li><li>When both courses are selected, the chart allocates credit to GenAI Training first, then Workflow Automation. This is for illustration; total credit used is unchanged.</li></ul><a href="https://www.tpgateway.gov.sg/faq/skillsfuture-enterprise-credit-enhanced" target="_blank" rel="noopener noreferrer">Read the official SFEC (Enhanced) guidance ↗</a><p class="verified-date">Rules reviewed 24 November 2026.</p></div></details>
+    <footer><span>Vertical Institute</span><span>Built for better training conversations.</span></footer>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="live-summary" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="noscript">Please enable JavaScript to use the interactive calculator. Estimates update when you change the enrolment counts or subsidy.</p></noscript>
+</body>
+</html>
