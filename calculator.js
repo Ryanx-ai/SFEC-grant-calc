@@ -51,7 +51,7 @@ export function calculate(input) {
     const enhancedOffsetPerPax = Math.round(enhancedNetPerPax * sfec / 100);
     const ageSavings = (netPerPax - enhancedNetPerPax) * localAges.eligible;
     return { ...course, local, foreign, localAges, foreignAges, netPerPax, offsetPerPax,
-      enhancedNetPerPax, ageSavings,
+      enhancedNetPerPax, enhancedOffsetPerPax, ageSavings,
       gstPerPax: course.fee * 9 / 100,
       localGross: course.fee * local, foreignGross: course.fee * foreign,
       localNet: netPerPax * local - ageSavings,
@@ -61,16 +61,26 @@ export function calculate(input) {
   const localGross = sum('localGross');
   const foreignGross = sum('foreignGross');
   const localNet = sum('localNet');
-  const offset = Math.min(balance, Math.round(localNet * sfec / 100));
+  const foreignClaimable = sfec === 90 ? Math.round(foreignGross * 90 / 100) : 0;
+  // Display allocation assumes SG/PR claims first; both groups share one balance.
+  const localOffset = Math.min(balance, Math.round(localNet * sfec / 100));
+  const foreignOffset = Math.min(balance - localOffset, foreignClaimable);
+  const offset = localOffset + foreignOffset;
+  const foreignShortfall = foreignGross - foreignOffset;
+  if (sfec === 90) {
+    const localTargetBalance = Math.max(0, balance - foreignClaimable);
+    for (const row of rows) Object.assign(row, ageMixTarget(localTargetBalance,
+      row.offsetPerPax, row.enhancedOffsetPerPax, row.local, row.localAges.older, row.localAges.eligible));
+  }
   const remaining = balance - offset;
-  const shortfall = localNet - offset;
+  const shortfall = localNet - localOffset;
   const localGst = localGross * 9 / 100;
   const foreignGst = foreignGross * 9 / 100;
   return { subsidy, enhancedSubsidy, sfec, balance, rows, localPax: sum('local'), foreignPax: sum('foreign'),
     localGross, foreignGross, localNet, savings: localGross - localNet,
-    offset, remaining, shortfall, localGst, foreignGst,
-    localPayable: shortfall + localGst, foreignPayable: foreignGross + foreignGst,
-    totalPayable: shortfall + localGst + foreignGross + foreignGst,
+    offset, localOffset, foreignOffset, foreignShortfall, remaining, shortfall, localGst, foreignGst,
+    localPayable: shortfall + localGst, foreignPayable: foreignShortfall + foreignGst,
+    totalPayable: shortfall + localGst + foreignShortfall + foreignGst,
     totalUpfront: (sfec === 90 ? localNet : shortfall) + localGst + foreignGross + foreignGst,
     percentage: balance ? offset / balance * 100 : 0,
     suggestions: rows.map(row => ({ id: row.id, additional: Math.ceil(remaining / row.offsetPerPax),

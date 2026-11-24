@@ -79,12 +79,14 @@ test('totals reconcile across representative course mixes', () => {
 
 test('old SFEC reimburses 90% and distinguishes net cost from upfront cash', () => {
   const r = calculate({ subsidy:70, sfec:90, training:{local:21,foreign:4} });
-  assert.equal(r.offset,935550);
+  assert.equal(r.offset,1000000);
+  assert.equal(r.localOffset,935550);
+  assert.equal(r.foreignOffset,64450);
   assert.equal(r.shortfall,103950);
   assert.equal(r.localPayable,415800);
-  assert.equal(r.totalPayable,1135200);
+  assert.equal(r.totalPayable,1070750);
   assert.equal(r.totalUpfront,2070750);
-  assert.equal(r.remaining,64450);
+  assert.equal(r.remaining,0);
 });
 test('old SFEC thresholds consume the full tranche at both subsidy rates', () => {
   for (const [subsidy,targets] of [[70,[23,29]],[50,[14,18]]]) {
@@ -99,14 +101,15 @@ test('old SFEC thresholds consume the full tranche at both subsidy rates', () =>
     }
   }
 });
-test('new scheme remains default and foreign pricing is unaffected by SFEC rate', () => {
+test('new scheme remains default while only old SFEC supports foreign employees', () => {
   const input={subsidy:50,automation:{local:1,foreign:2}};
   const old=calculate({...input,sfec:90});
   const current=calculate(input);
   assert.equal(current.sfec,100);
   assert.equal(current.totalUpfront,current.totalPayable);
-  assert.equal(old.foreignPayable,current.foreignPayable);
-  assert.equal(old.offset,58500);
+  assert.equal(current.foreignPayable,283400);
+  assert.equal(old.foreignPayable,49400);
+  assert.equal(old.offset,292500);
   assert.equal(old.localPayable,18200);
 });
 
@@ -167,15 +170,15 @@ test('reduced-balance targets are minimal for every course and both rates', () =
 });
 
 test('0% subsidy uses full fees with both courses and SFEC rates', () => {
-  for (const [id,fee,gst,targets] of [['training',165000,14850,[7,7]],['automation',130000,11700,[8,9]]]) {
+  for (const [id,fee,gst,targets] of [['training',165000,14850,[7,6]],['automation',130000,11700,[8,8]]]) {
     for (const [index,sfec] of [100,90].entries()) {
       const r=calculate({subsidy:0,sfec,[id]:{local:1,foreign:1}});
       assert.equal(r.subsidy,0);
       assert.equal(r.savings,0);
       assert.equal(r.localNet,fee);
-      assert.equal(r.offset,fee*sfec/100);
-      assert.equal(r.localPayable,fee-r.offset+gst);
-      assert.equal(r.foreignPayable,fee+gst);
+      assert.equal(r.offset,fee*sfec/100*(sfec===90?2:1));
+      assert.equal(r.localPayable,fee-r.localOffset+gst);
+      assert.equal(r.foreignPayable,fee+gst-(sfec===90?fee*.9:0));
       assert.equal(r.rows.find(row=>row.id===id).target,targets[index]);
       assert.equal(r.totalUpfront,sfec===100?r.totalPayable:(fee+gst)*2);
     }
@@ -200,9 +203,9 @@ test('eligible older citizens receive 20 percentage points off full fees', () =>
     const row=r.rows.find(c=>c.id===id);
     assert.equal(row.localNet,fee*(100-subsidy)/100*10-fee*.2*5);
     assert.equal(row.ageSavings,fee);
-    assert.equal(r.offset,Math.min(TRANCHE,Math.round(row.localNet*sfec/100)));
+    assert.equal(r.offset,Math.min(TRANCHE,Math.round((row.localNet+(sfec===90?fee*4:0))*sfec/100)));
     assert.equal(r.localGst,fee*.09*10);
-    assert.equal(r.foreignPayable,fee*4*1.09);
+    assert.equal(r.foreignPayable,fee*4*1.09-r.foreignOffset);
     assert.deepEqual(row.localAges,{younger:3,older:7,eligible:5});
     assert.deepEqual(row.foreignAges,{younger:1,older:3,eligible:0});
   }
@@ -254,5 +257,56 @@ test('mixed-age targets reach balance and preserve whole-person age proportions'
     assert.equal(older.totalPayable,base.totalPayable);
     assert.deepEqual(older.rows.map(r=>r.target),base.rows.map(r=>r.target));
     assert.equal(older.rows.find(r=>r.id===id).ageSavings,0);
+  }
+});
+
+
+test('old SFEC foreign-only claims use full fees without SSG or GST funding', () => {
+  for (const [id,fee] of [['training',165000],['automation',130000]]) for (const subsidy of [0,50,70]) {
+    const r=calculate({sfec:90,subsidy,[id]:{foreign:1}});
+    assert.equal(r.savings,0);
+    assert.equal(r.localOffset,0);
+    assert.equal(r.foreignOffset,fee*.9);
+    assert.equal(r.foreignShortfall,fee*.1);
+    assert.equal(r.foreignPayable,fee*.19);
+    assert.equal(r.totalUpfront,fee*1.09);
+    assert.equal(r.totalUpfront-r.totalPayable,r.offset);
+  }
+});
+test('old SFEC uses one shared cap with zero, reduced, and exhausted balances', () => {
+  for (const balance of [0,1,123456,TRANCHE]) for (const local of [0,1,21,9999]) for (const foreign of [0,1,7,9999]) {
+    const r=calculate({sfec:90,subsidy:70,balance,training:{local,foreign}});
+    assert.equal(r.offset,Math.min(balance,local*44550+foreign*148500));
+    assert.equal(r.localOffset+r.foreignOffset,r.offset);
+    assert.ok(r.foreignOffset>=0 && r.foreignOffset<=foreign*148500);
+    assert.equal(r.localPayable+r.foreignPayable,r.totalPayable);
+    assert.equal(r.totalUpfront-r.totalPayable,r.offset);
+    assert.equal(r.remaining+r.offset,balance);
+  }
+});
+test('old SFEC targets include entered foreign pax and remain minimal', () => {
+  for (const id of ['training','automation']) for (const subsidy of [0,50,70]) for (const foreign of [0,1,4,9]) for (const balance of [0,123456,TRANCHE]) {
+    const input={sfec:90,subsidy,balance};
+    const r=calculate({...input,[id]:{local:10,localOlder:4,eligibleOlder:4,foreign}});
+    const row=r.rows.find(c=>c.id===id);
+    const filled=calculate({...input,[id]:{local:row.target,localOlder:row.targetAges.older,eligibleOlder:row.targetAges.eligible,foreign}});
+    assert.equal(filled.offset,balance);
+    if(row.target>0) {
+      const eligible=Math.floor((row.target-1)*4/10);
+      const before=calculate({...input,[id]:{local:row.target-1,localOlder:eligible,eligibleOlder:eligible,foreign}});
+      assert.ok(before.offset<balance);
+    }
+  }
+});
+test('100% foreign costs and targets remain independent of foreign headcount', () => {
+  for (const id of ['training','automation']) for (const subsidy of [0,50,70]) for (const balance of [0,123456,TRANCHE]) {
+    const input={sfec:100,subsidy,balance};
+    const base=calculate({...input,[id]:{local:10,localOlder:4,eligibleOlder:4}});
+    const mixed=calculate({...input,[id]:{local:10,localOlder:4,eligibleOlder:4,foreign:9}});
+    assert.equal(mixed.foreignOffset,0);
+    assert.equal(mixed.foreignPayable,mixed.foreignGross+mixed.foreignGst);
+    assert.equal(mixed.localPayable,base.localPayable);
+    assert.equal(mixed.offset,base.offset);
+    assert.equal(mixed.rows.find(r=>r.id===id).target,base.rows.find(r=>r.id===id).target);
   }
 });

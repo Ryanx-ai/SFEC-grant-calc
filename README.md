@@ -21,11 +21,11 @@ Vercel builds with `npm run build` and serves `dist/`. Connect this repository's
 - SG/PR net fee = full fee × (1 − selected subsidy).
 - At 50% SSG funding only, eligible Singapore Citizens aged 40+ receive 20 additional percentage points, capped at 70% total course subsidy. The two controls are “Under 40 / PR” (baseline funding, including PRs of any age) and “Citizens 40 & above”; their counts sum to SG/PR pax. Foreign participants have no age controls. At 0% and 70%, no top-up applies and age controls are hidden.
 - Mixed local net fees = baseline net fee × non-enhanced pax + enhanced net fee × eligible older pax. GST stays on full fees.
-- SFEC = min(available balance, total eligible net fees × selected 90% / 100% rate).
-- Foreign participants pay full fees and receive no subsidy or SFEC in this model.
+- SFEC = min(available balance, total eligible net fees × selected 90% / 100% rate). Eligible fees include foreign full fees only under the old 90% scheme.
+- Foreign participants receive no SSG subsidy. Under old 90% SFEC, their full fees (excluding GST) are claimable at 90%, sharing the same available balance with locals. Under upcoming 100% SFEC, foreigners remain ineligible. The displayed allocation gives SG/PR claims priority, then foreigners; actual drawdown follows trainee/claim order. Old-scheme upfront payment remains full fees plus GST before reimbursement.
 - GST = 9% of full fees, before subsidy.
 - Net cost = fees after subsidy − SFEC + GST. This is also upfront payable under the new scheme; under the old reimbursement scheme, upfront payment is fees after subsidy + GST.
-- The pax target finds the smallest whole-number cohort that consumes the available balance at the current SG/PR age and eligibility proportions, rounding older/eligible counts down. The target button applies these counts; without eligible older pax, the target uses the baseline rate. Changing total pax preserves older counts up to the new total and assigns new pax to under 40.
+- The pax target finds the smallest whole-number cohort that consumes the available balance at the current SG/PR age and eligibility proportions, rounding older/eligible counts down. For old 90% SFEC, the SG/PR target first subtracts the claimable amount for entered foreign participants from the available balance. The target button applies these counts; without eligible older pax, the target uses the baseline rate. Changing total pax preserves older counts up to the new total and assigns new pax to under 40.
 - Calculations use integer cents. Counts are whole enrolments, clamped to 0–9,999 per field.
 - The interface estimates one selected course at a time. The reusable calculation engine also supports mixed courses under a shared cap.
 - Available balance defaults to S$10,000 and can be set from S$0 to S$10,000, including cents. Enter unused credit before this plan. Claims and pax targets use this balance; the meter shows credit consumed by this plan only. Zero balance means no offset or recommended pax. Absentee payroll, EIS and input GST recovery are outside scope. Each pax attends the selected course.
@@ -48,3 +48,5 @@ The age editor is collapsed by default behind “Set ages”. Its summary shows 
 ## Validation
 
 `npm test` covers the owner's 21-local/4-foreign example, both rates and course thresholds, mixed-course shared cap, empty and foreign-only plans, recommendations, invalid inputs and reconciliation of totals. Core calculations run without network access; Google Fonts has system font fallbacks. Plans are represented in the URL; no personal information is collected or sent to a backend.
+
+- [TPGateway old SFEC FAQ](https://www.tpgateway.gov.sg/faq/skillsfuture-enterprise-credit-%28sfec%29): foreign employee claims, 90% reimbursement and drawdown order.

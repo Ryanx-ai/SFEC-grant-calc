@@ -22,10 +22,11 @@ function render() {
   $('age-row').hidden = !ageAvailable || $('age-toggle').getAttribute('aria-expanded') !== 'true';
   $('age-row').classList.toggle('age-available',ageAvailable);
   $('age-toggle-label').textContent = ageBenefit ? `Ages · ${row.localAges.eligible} citizens 40+` : 'Set ages';
-  const values = { 'target-pax':row.target, 'target-description':r.balance ? ` to use ${money(r.balance)}${ageBenefit ? ' at this age mix' : ' balance'}` : ' · No SFEC credit available', 'balance-cap':`Up to ${money(r.balance)} available`, 'local-gross':money(r.localGross), 'foreign-gross':money(r.foreignGross),
+  const values = { 'target-pax':row.target, 'target-description':r.balance ? ` to use ${money(r.balance)}${ageBenefit ? ' at this age mix' : ' balance'}${sfec === 90 && r.foreignPax ? ` with ${r.foreignPax} foreign pax` : ''}` : ' · No SFEC credit available', 'balance-cap':`Up to ${money(r.balance)} available`, 'local-gross':money(r.localGross), 'foreign-gross':money(r.foreignGross),
     'local-net':money(r.localNet), 'foreign-net':money(r.foreignGross), 'subsidy-label':ageBenefit ? `${subsidy}% + 20 pts for ${row.localAges.eligible} eligible SCs` : `${subsidy}% subsidy`,
-    'net-per-pax':ageBenefit ? `Base ${money(row.netPerPax)} · Eligible 40+ ${money(row.enhancedNetPerPax)} / pax` : `${money(row.netPerPax)} / pax`, 'sfec-offset':r.offset ? `−${money(r.offset)}` : money(0),
-    'local-after':money(r.shortfall), 'foreign-after':money(r.foreignGross), 'local-gst':money(r.localGst),
+    'net-per-pax':ageBenefit ? `Base ${money(row.netPerPax)} · Eligible 40+ ${money(row.enhancedNetPerPax)} / pax` : `${money(row.netPerPax)} / pax`, 'sfec-offset':r.localOffset ? `−${money(r.localOffset)}` : money(0),
+    'foreign-sfec-offset':sfec === 90 ? (r.foreignOffset ? `−${money(r.foreignOffset)}` : money(0)) : 'Not eligible',
+    'local-after':money(r.shortfall), 'foreign-after':money(r.foreignShortfall), 'local-gst':money(r.localGst),
     'foreign-gst':money(r.foreignGst), 'local-payable':money(r.localPayable), 'foreign-payable':money(r.foreignPayable),
     'credit-used':money(r.offset), 'credit-remaining':`${money(r.remaining)} remaining`, 'total-payable':money(r.totalUpfront),
     'sfec-label':`SFEC ${sfec === 90 ? 'claim' : 'offset'} (${sfec}%)`,
@@ -35,6 +36,8 @@ function render() {
     'total-label':sfec === 90 ? 'Total upfront' : 'Total payable',
     'scheme-note':sfec === 90 ? 'Old SFEC: reimbursed after payment; expires 30 Nov 2026. Uses your available balance; subject to eligibility.' : 'Enhanced SFEC from 1 Dec 2026. Uses your available balance; subject to course & employee eligibility.' };
   for (const [id,value] of Object.entries(values)) $(id).textContent = value;
+  $('foreign-sfec-offset').classList.toggle('not-eligible',sfec === 100);
+  $('foreign-claim-note').hidden = sfec !== 90;
   document.querySelectorAll('.per-pax').forEach(el => el.textContent = `${money(row.fee)} / pax`);
   $('fill-target').innerHTML = r.balance ? `Use ${row.target} pax <span aria-hidden="true">↗</span>` : 'No credit';
   $('fill-target').disabled = r.balance === 0;
