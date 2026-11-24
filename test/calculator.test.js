@@ -165,3 +165,31 @@ test('reduced-balance targets are minimal for every course and both rates', () =
     }
   }
 });
+
+test('0% subsidy uses full fees with both courses and SFEC rates', () => {
+  for (const [id,fee,gst,targets] of [['training',165000,14850,[7,7]],['automation',130000,11700,[8,9]]]) {
+    for (const [index,sfec] of [100,90].entries()) {
+      const r=calculate({subsidy:0,sfec,[id]:{local:1,foreign:1}});
+      assert.equal(r.subsidy,0);
+      assert.equal(r.savings,0);
+      assert.equal(r.localNet,fee);
+      assert.equal(r.offset,fee*sfec/100);
+      assert.equal(r.localPayable,fee-r.offset+gst);
+      assert.equal(r.foreignPayable,fee+gst);
+      assert.equal(r.rows.find(row=>row.id===id).target,targets[index]);
+      assert.equal(r.totalUpfront,sfec===100?r.totalPayable:(fee+gst)*2);
+    }
+  }
+});
+test('0% subsidy respects reduced and zero SFEC balances', () => {
+  for (const sfec of [90,100]) {
+    const r=calculate({subsidy:'0',sfec,balance:250000,training:{local:2}});
+    assert.equal(r.offset,250000);
+    assert.equal(r.rows[0].target,2);
+    assert.equal(r.localPayable,109700);
+    const zero=calculate({subsidy:0,sfec,balance:0,training:{local:1}});
+    assert.equal(zero.localPayable,179850);
+    assert.equal(zero.rows[0].target,0);
+  }
+  assert.equal(calculate({}).subsidy,70);
+});

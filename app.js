@@ -49,7 +49,7 @@ function load() {
   const course = params.get('course') === 'automation' || (!params.has('course') && Number(params.get('automation-local')) > 0 && !Number(params.get('training-local'))) ? 'automation' : 'training';
   $('course').value = course;
   $('sfec-balance').value = (normalizeBalance(params.has('balance') ? Number(params.get('balance')) * 100 : undefined) / 100).toFixed(2);
-  const subsidy = params.get('subsidy') === '50' ? '50' : '70';
+  const subsidy = ['0', '50', '70'].includes(params.get('subsidy')) ? params.get('subsidy') : '70';
   document.querySelector(`[name="subsidy"][value="${subsidy}"]`).checked = true;
   const sfec = params.get('sfec') === '90' ? '90' : '100';
   document.querySelector(`[name="sfec"][value="${sfec}"]`).checked = true;

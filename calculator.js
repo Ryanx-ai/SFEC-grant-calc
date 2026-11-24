@@ -16,7 +16,7 @@ export function normalizeBalance(value = TRANCHE) {
 }
 export function calculate(input) {
   const balance = normalizeBalance(input.balance);
-  const subsidy = Number(input.subsidy) === 50 ? 50 : 70;
+  const subsidy = input.subsidy === 0 || input.subsidy === '0' ? 0 : Number(input.subsidy) === 50 ? 50 : 70;
   const sfec = Number(input.sfec) === 90 ? 90 : 100;
   const rows = COURSES.map(course => {
     const local = normalizePax(input[course.id]?.local ?? 0);

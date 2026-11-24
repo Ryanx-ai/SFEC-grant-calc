@@ -1,6 +1,6 @@
 # SFEC Grant Calculator
 
-Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with an editable available SFEC balance up to S$10,000, a choice of two courses, 50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
+Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with an editable available SFEC balance up to S$10,000, a choice of two courses, 0%/50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
 
 ## Run
 
