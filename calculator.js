@@ -4,6 +4,7 @@ export const MAX_PAX = 9999;
 export const COURSES = [
   { id: 'training', name: 'GenAI Training', fee: 165_000 },
   { id: 'automation', name: 'GenAI Workflow Automation', fee: 130_000 },
+  { id: 'content', name: 'GenAI Content Creation', fee: 130_000 },
 ];
 export function normalizePax(value) {
   const n = Number(value);

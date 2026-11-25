@@ -1,6 +1,6 @@
 # SFEC Grant Calculator
 
-Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with an editable available SFEC balance up to S$10,000, a choice of two courses, 0%/50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, collapsible age breakdown and minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
+Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with an editable available SFEC balance up to S$10,000, a choice of three courses, 0%/50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, collapsible age breakdown and minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
 
 ## Run
 
@@ -18,6 +18,7 @@ Vercel builds with `npm run build` and serves `dist/`. Connect this repository's
 
 - GenAI Training: S$1,650 per enrolment, excluding GST.
 - GenAI Workflow Automation: S$1,300 per enrolment, excluding GST.
+- GenAI Content Creation: S$1,300 per enrolment, excluding GST.
 - SG/PR net fee = full fee × (1 − selected subsidy).
 - At 50% SSG funding only, eligible Singapore Citizens aged 40+ receive 20 additional percentage points, capped at 70% total course subsidy. The two controls are “Under 40 / PR” (baseline funding, including PRs of any age) and “Citizens 40 & above”; their counts sum to SG/PR pax. Foreign participants have no age controls. At 0% and 70%, no top-up applies and age controls are hidden.
 - Mixed local net fees = baseline net fee × non-enhanced pax + enhanced net fee × eligible older pax. GST stays on full fees.

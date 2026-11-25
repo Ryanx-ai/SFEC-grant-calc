@@ -21,7 +21,7 @@ test('one eligible training participant pays GST only at either subsidy', () => 
   }
 });
 test('fresh tranche thresholds for both courses and subsidy rates', () => {
-  for (const [subsidy, targets] of [[70, [21, 26]], [50, [13, 16]]]) {
+  for (const [subsidy, targets] of [[70, [21, 26, 26]], [50, [13, 16, 16]]]) {
     const r = calculate({ subsidy });
     assert.deepEqual(r.rows.map(row => row.target), targets);
     for (const row of r.rows) {
@@ -89,7 +89,7 @@ test('old SFEC reimburses 90% and distinguishes net cost from upfront cash', () 
   assert.equal(r.remaining,0);
 });
 test('old SFEC thresholds consume the full tranche at both subsidy rates', () => {
-  for (const [subsidy,targets] of [[70,[23,29]],[50,[14,18]]]) {
+  for (const [subsidy,targets] of [[70,[23,29,29]],[50,[14,18,18]]]) {
     const r = calculate({ subsidy,sfec:90 });
     assert.deepEqual(r.rows.map(row=>row.target),targets);
     for (const row of r.rows) {
@@ -170,7 +170,7 @@ test('reduced-balance targets are minimal for every course and both rates', () =
 });
 
 test('0% subsidy uses full fees with both courses and SFEC rates', () => {
-  for (const [id,fee,gst,targets] of [['training',165000,14850,[7,6]],['automation',130000,11700,[8,8]]]) {
+  for (const [id,fee,gst,targets] of [['training',165000,14850,[7,6]],['automation',130000,11700,[8,8]],['content',130000,11700,[8,8]]]) {
     for (const [index,sfec] of [100,90].entries()) {
       const r=calculate({subsidy:0,sfec,[id]:{local:1,foreign:1}});
       assert.equal(r.subsidy,0);
@@ -198,7 +198,7 @@ test('0% subsidy respects reduced and zero SFEC balances', () => {
 });
 
 test('eligible older citizens receive 20 percentage points off full fees', () => {
-  for (const [id,fee] of [['training',165000],['automation',130000]]) for (const subsidy of [50]) for (const sfec of [90,100]) {
+  for (const [id,fee] of [['training',165000],['automation',130000],['content',130000]]) for (const subsidy of [50]) for (const sfec of [90,100]) {
     const r=calculate({subsidy,sfec,[id]:{local:10,localOlder:7,eligibleOlder:5,foreign:4,foreignOlder:3}});
     const row=r.rows.find(c=>c.id===id);
     assert.equal(row.localNet,fee*(100-subsidy)/100*10-fee*.2*5);
@@ -225,7 +225,7 @@ test('invalid age counts are clamped to each participant total', () => {
   assert.deepEqual(r.rows[1].localAges,{younger:1,older:0,eligible:0});
 });
 test('all-older cohort targets account for the smaller net fee', () => {
-  for (const [sfec,targets] of [[100,[21,26]],[90,[23,29]]]) {
+  for (const [sfec,targets] of [[100,[21,26,26]],[90,[23,29,29]]]) {
     const r=calculate({sfec,subsidy:70,training:{local:10,localOlder:10,eligibleOlder:10},automation:{local:10,localOlder:10,eligibleOlder:10}});
     assert.deepEqual(r.rows.map(row=>row.target),targets);
   }
@@ -249,7 +249,7 @@ test('mixed-age targets reach balance and preserve whole-person age proportions'
 });
 
  test('70% funding is the cap even with eligible citizens aged 40+', () => {
-  for (const id of ['training','automation']) for (const sfec of [90,100]) for (const subsidy of [0,70]) {
+  for (const id of ['training','automation','content']) for (const sfec of [90,100]) for (const subsidy of [0,70]) {
     const base=calculate({subsidy,sfec,[id]:{local:10,foreign:4}});
     const older=calculate({subsidy,sfec,[id]:{local:10,localOlder:10,eligibleOlder:10,foreign:4}});
     assert.equal(older.enhancedSubsidy,subsidy);
@@ -262,7 +262,7 @@ test('mixed-age targets reach balance and preserve whole-person age proportions'
 
 
 test('old SFEC foreign-only claims use full fees without SSG or GST funding', () => {
-  for (const [id,fee] of [['training',165000],['automation',130000]]) for (const subsidy of [0,50,70]) {
+  for (const [id,fee] of [['training',165000],['automation',130000],['content',130000]]) for (const subsidy of [0,50,70]) {
     const r=calculate({sfec:90,subsidy,[id]:{foreign:1}});
     assert.equal(r.savings,0);
     assert.equal(r.localOffset,0);
@@ -285,7 +285,7 @@ test('old SFEC uses one shared cap with zero, reduced, and exhausted balances', 
   }
 });
 test('old SFEC targets include entered foreign pax and remain minimal', () => {
-  for (const id of ['training','automation']) for (const subsidy of [0,50,70]) for (const foreign of [0,1,4,9]) for (const balance of [0,123456,TRANCHE]) {
+  for (const id of ['training','automation','content']) for (const subsidy of [0,50,70]) for (const foreign of [0,1,4,9]) for (const balance of [0,123456,TRANCHE]) {
     const input={sfec:90,subsidy,balance};
     const r=calculate({...input,[id]:{local:10,localOlder:4,eligibleOlder:4,foreign}});
     const row=r.rows.find(c=>c.id===id);
@@ -299,7 +299,7 @@ test('old SFEC targets include entered foreign pax and remain minimal', () => {
   }
 });
 test('100% foreign costs and targets remain independent of foreign headcount', () => {
-  for (const id of ['training','automation']) for (const subsidy of [0,50,70]) for (const balance of [0,123456,TRANCHE]) {
+  for (const id of ['training','automation','content']) for (const subsidy of [0,50,70]) for (const balance of [0,123456,TRANCHE]) {
     const input={sfec:100,subsidy,balance};
     const base=calculate({...input,[id]:{local:10,localOlder:4,eligibleOlder:4}});
     const mixed=calculate({...input,[id]:{local:10,localOlder:4,eligibleOlder:4,foreign:9}});
