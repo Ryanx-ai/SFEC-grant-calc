@@ -1,10 +1,177 @@
 // Monetary arithmetic uses integer cents throughout.
 export const TRANCHE = 1_000_000;
 export const MAX_PAX = 9999;
+// Full fees before GST, checked against official course pages on 25 November 2026.
+export const COURSE_PRICES_REVIEWED = "25 November 2026";
 export const COURSES = [
-  { id: 'training', name: 'GenAI Training', fee: 165_000 },
-  { id: 'automation', name: 'GenAI Workflow Automation', fee: 130_000 },
-  { id: 'content', name: 'GenAI Content Creation', fee: 130_000 },
+  {
+    "id": "training",
+    "name": "Generative AI Training",
+    "fee": 165000,
+    "category": "Featured — Generative AI",
+    "source": "https://verticalinstitute.com/generative-ai-course/"
+  },
+  {
+    "id": "content",
+    "name": "Generative AI for Content Creation",
+    "fee": 130000,
+    "category": "Featured — Generative AI",
+    "source": "https://verticalinstitute.com/courses/generative-ai-for-content-creation-course/"
+  },
+  {
+    "id": "automation",
+    "name": "Generative AI Workflow Automation",
+    "fee": 130000,
+    "category": "Featured — Generative AI",
+    "source": "https://verticalinstitute.com/short-courses/ai-workflow-automation-course/"
+  },
+  {
+    "id": "data-analytics",
+    "name": "Data Analytics",
+    "fee": 195000,
+    "category": "Data Analytics",
+    "source": "https://verticalinstitute.com/data-analytics/"
+  },
+  {
+    "id": "advanced-data-analytics",
+    "name": "Advanced Data Analytics",
+    "fee": 200000,
+    "category": "Data Analytics",
+    "source": "https://verticalinstitute.com/advanced-data-analytics/"
+  },
+  {
+    "id": "power-bi",
+    "name": "Data Analytics Using Power BI",
+    "fee": 130000,
+    "category": "Data Analytics",
+    "source": "https://verticalinstitute.com/courses/power-bi-course/"
+  },
+  {
+    "id": "data-science",
+    "name": "Data Science & AI",
+    "fee": 165000,
+    "category": "Data Science & AI",
+    "source": "https://verticalinstitute.com/data-science/"
+  },
+  {
+    "id": "ux-design",
+    "name": "UI/UX Design",
+    "fee": 165000,
+    "category": "UI/UX Design",
+    "source": "https://verticalinstitute.com/user-experience/"
+  },
+  {
+    "id": "digital-marketing",
+    "name": "Digital Marketing",
+    "fee": 165000,
+    "category": "Digital Marketing",
+    "source": "https://verticalinstitute.com/digital-marketing-course/"
+  },
+  {
+    "id": "seo-marketing",
+    "name": "SEO Marketing",
+    "fee": 130000,
+    "category": "Digital Marketing",
+    "source": "https://verticalinstitute.com/short-courses/seo-marketing/"
+  },
+  {
+    "id": "google-analytics",
+    "name": "Mastering Google Analytics 4",
+    "fee": 130000,
+    "category": "Digital Marketing",
+    "source": "https://verticalinstitute.com/short-courses/google-analytics-course/"
+  },
+  {
+    "id": "google-youtube-marketing",
+    "name": "Google & YouTube Marketing",
+    "fee": 130000,
+    "category": "Digital Marketing",
+    "source": "https://verticalinstitute.com/short-courses/google-youtube-marketing-course/"
+  },
+  {
+    "id": "ecommerce-gig-platforms",
+    "name": "E-commerce and Gig Platforms",
+    "fee": 60000,
+    "category": "Digital Marketing",
+    "source": "https://verticalinstitute.com/short-courses/ecommerce-and-gig-platform-course/"
+  },
+  {
+    "id": "cybersecurity",
+    "name": "Cybersecurity",
+    "fee": 165000,
+    "category": "Cybersecurity",
+    "source": "https://verticalinstitute.com/cybersecurity/"
+  },
+  {
+    "id": "carbon-reporting",
+    "name": "Carbon Reporting & Greenhouse Gas Measurement",
+    "fee": 130000,
+    "category": "Sustainability & ESG",
+    "source": "https://verticalinstitute.com/short-courses/carbon-reporting-ghg-measurement-course/"
+  },
+  {
+    "id": "blockchain-cryptocurrency",
+    "name": "Blockchain & Cryptocurrency",
+    "fee": 200000,
+    "category": "Investments & Finance",
+    "source": "https://verticalinstitute.com/blockchain-course/"
+  },
+  {
+    "id": "leading-with-clarity",
+    "name": "Leading with Clarity: From Strategy to Team Results",
+    "fee": 120000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/strategy-to-team-results-course/"
+  },
+  {
+    "id": "customer-relationships",
+    "name": "Manage and Strengthen Customer Relationships",
+    "fee": 60000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/manage-and-strengthen-customer-relationships/"
+  },
+  {
+    "id": "people-relationship-management",
+    "name": "Effective People and Relationship Management",
+    "fee": 110000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/effective-people-relationship-management-course/"
+  },
+  {
+    "id": "critical-thinking",
+    "name": "Critical Thinking & Problem-Solving",
+    "fee": 110000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/critical-thinking-and-problem-solving-course/"
+  },
+  {
+    "id": "presentation-storytelling",
+    "name": "Effective Presentation and Storytelling",
+    "fee": 130000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/effective-presentation-storytelling-course/"
+  },
+  {
+    "id": "stress-resilience",
+    "name": "Manage Stress and Build Mental Resilience",
+    "fee": 60000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/manage-stress-build-mental-resilience-course/"
+  },
+  {
+    "id": "workplace-conflict",
+    "name": "Managing Conflict in the Workplace",
+    "fee": 120000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/managing-conflict-in-the-workplace/"
+  },
+  {
+    "id": "personal-growth-productivity",
+    "name": "Enhance Personal Growth & Increase Productivity",
+    "fee": 110000,
+    "category": "Critical Soft Skills",
+    "source": "https://verticalinstitute.com/short-courses/enhance-personal-growth-increase-productivity/"
+  }
 ];
 export function normalizePax(value) {
   const n = Number(value);

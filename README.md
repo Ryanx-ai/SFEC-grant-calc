@@ -1,6 +1,6 @@
 # SFEC Grant Calculator
 
-Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with an editable available SFEC balance up to S$10,000, a choice of three courses, 0%/50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, collapsible age breakdown and minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
+Single-screen, table-based training planner for Vertical Institute, matching the supplied pricing comparison references. Static, dependency-free browser application with an editable available SFEC balance up to S$10,000, 24 courses grouped by category with three featured Generative AI courses first, 0%/50%/70% subsidy selection, SG/PR and foreign participant pricing, credit utilisation, collapsible age breakdown and minimum SG/PR headcount, cost breakdown, shareable plan URLs and print/PDF layout.
 
 ## Run
 
@@ -16,9 +16,7 @@ Vercel builds with `npm run build` and serves `dist/`. Connect this repository's
 
 ## Calculation model
 
-- GenAI Training: S$1,650 per enrolment, excluding GST.
-- GenAI Workflow Automation: S$1,300 per enrolment, excluding GST.
-- GenAI Content Creation: S$1,300 per enrolment, excluding GST.
+- All 24 courses and full fees before GST are recorded in [COURSE_PRICES.md](COURSE_PRICES.md), with official source links and the review date.
 - SG/PR net fee = full fee × (1 − selected subsidy).
 - At 50% SSG funding only, eligible Singapore Citizens aged 40+ receive 20 additional percentage points, capped at 70% total course subsidy. The two controls are “Under 40 / PR” (baseline funding, including PRs of any age) and “Citizens 40 & above”; their counts sum to SG/PR pax. Foreign participants have no age controls. At 0% and 70%, no top-up applies and age controls are hidden.
 - Mixed local net fees = baseline net fee × non-enhanced pax + enhanced net fee × eligible older pax. GST stays on full fees.
@@ -38,7 +36,7 @@ Rules checked 24 November 2026. The SFEC toggle supports the old 90% reimburseme
 - [TPGateway enhanced SFEC FAQ](https://www.tpgateway.gov.sg/faq/skillsfuture-enterprise-credit-enhanced): 100% net training fee offset, GST exclusion, SG/PR eligibility, upfront treatment, wallet cap.
 - [MOM announcement, 3 November 2026](https://www.mom.gov.sg/newsroom/parliament-questions-and-replies/2026/1103-written-answer-to-pq-on-redesigned-skillsfuture-enterprise-credit): fresh S$10,000 wallet and 1 December 2026 launch.
 
-Course fees supplied by the project owner. Subsidy and tax treatment match the supplied pricing examples. The UI includes eligibility notes and links to official guidance.
+Course fees checked against Vertical Institute’s official course pages on 25 November 2026. Subsidy and tax treatment match the supplied pricing examples. The UI includes eligibility notes and links to official guidance.
 
 ## Design
 

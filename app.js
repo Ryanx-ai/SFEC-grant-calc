@@ -1,11 +1,28 @@
-import { calculate, COURSES, normalizePax, normalizeBalance, MAX_PAX } from './calculator.js';
+import { calculate, COURSES, COURSE_PRICES_REVIEWED, normalizePax, normalizeBalance, MAX_PAX } from './calculator.js';
 const $ = id => document.getElementById(id);
 const money = cents => `S$${(cents / 100).toLocaleString('en-SG', { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
 let result;
 let timer;
 let announceTimer;
+function populateCourses() {
+  const groups = new Map();
+  for (const course of COURSES) {
+    if (!groups.has(course.category)) {
+      const group = document.createElement('optgroup');
+      group.label = course.category;
+      groups.set(course.category,group);
+      $('course').append(group);
+    }
+    const option = new Option(`${course.name} · ${money(course.fee)}`,course.id);
+    groups.get(course.category).append(option);
+  }
+}
 function render() {
   const course = COURSES.find(c => c.id === $('course').value);
+  $('course').title = `${course.name} · ${money(course.fee)} before GST`;
+  $('course-price-source').href = course.source;
+  $('course-price-source').textContent = `${course.name}: ${money(course.fee)} before GST`;
+  $('course-prices-reviewed').textContent = `Course prices checked ${COURSE_PRICES_REVIEWED}.`;
   const subsidy = Number(document.querySelector('[name="subsidy"]:checked').value);
   const sfec = Number(document.querySelector('[name="sfec"]:checked').value);
   result = calculate({ subsidy, sfec, balance:normalizeBalance(Number($('sfec-balance').value) * 100), [course.id]: { local: $('local-pax').value, foreign: $('foreign-pax').value, localOlder:$('local-older').value, eligibleOlder:$('local-older').value } });
@@ -128,4 +145,5 @@ $('notes-open').addEventListener('click',() => $('notes').showModal());
 $('notes-close').addEventListener('click',() => $('notes').close());
 $('notes').addEventListener('click',event => { if(event.target === $('notes')) { const rect=$('notes').getBoundingClientRect(); if(event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) $('notes').close(); } });
 window.addEventListener('popstate',load);
+populateCourses();
 load();
