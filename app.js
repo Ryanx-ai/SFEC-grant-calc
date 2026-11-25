@@ -4,6 +4,7 @@ const money = cents => `S$${(cents / 100).toLocaleString('en-SG', { minimumFract
 let result;
 let timer;
 let announceTimer;
+let foreignHidden = false;
 function populateCourses() {
   const groups = new Map();
   for (const course of COURSES) {
@@ -28,6 +29,13 @@ function render() {
   result = calculate({ subsidy, sfec, balance:normalizeBalance(Number($('sfec-balance').value) * 100), [course.id]: { local: $('local-pax').value, foreign: $('foreign-pax').value, localOlder:$('local-older').value, eligibleOlder:$('local-older').value } });
   const r = result;
   const row = r.rows.find(c => c.id === course.id);
+  $('fees-table').classList.toggle('foreign-hidden',foreignHidden);
+  document.querySelectorAll('#fees-table tr > :nth-child(3), #fees-table col:nth-child(3)').forEach(cell => { cell.hidden = foreignHidden; });
+  $('foreign-toggle').textContent = `${foreignHidden ? 'Show' : 'Hide'} foreign/work pass`;
+  $('foreign-toggle').setAttribute('aria-expanded',String(!foreignHidden));
+  $('hidden-foreign-note').hidden = !foreignHidden || r.foreignPax === 0;
+  $('hidden-foreign-note').textContent = `Totals still include ${r.foreignPax} hidden foreign/work pass participant${r.foreignPax === 1 ? '' : 's'}.`;
+
   $('local-younger').value = row.localAges.younger;
   $('local-older').value = row.localAges.older;
   $('local-younger').max = row.local;
@@ -72,12 +80,13 @@ function render() {
 }
 function saveUrl() {
   const url = new URL(location.href);
-  url.search = new URLSearchParams({ course:$('course').value, subsidy:result.subsidy, sfec:result.sfec, balance:(result.balance / 100).toFixed(2), local:normalizePax($('local-pax').value), foreign:normalizePax($('foreign-pax').value), citizens40:$('local-older').value }).toString();
+  url.search = new URLSearchParams({ course:$('course').value, subsidy:result.subsidy, sfec:result.sfec, balance:(result.balance / 100).toFixed(2), local:normalizePax($('local-pax').value), foreign:normalizePax($('foreign-pax').value), citizens40:$('local-older').value, ...(foreignHidden ? {foreignHidden:'1'} : {}) }).toString();
   history.replaceState(null,'',url);
 }
 function update() { render(); saveUrl(); }
 function load() {
   const params = new URLSearchParams(location.search);
+  foreignHidden = params.get('foreignHidden') === '1';
   const requestedCourse = params.get('course');
   const course = COURSES.some(course => course.id === requestedCourse) ? requestedCourse
     : (!params.has('course') && Number(params.get('automation-local')) > 0 && !Number(params.get('training-local'))) ? 'automation' : 'training';
@@ -96,6 +105,7 @@ function toast(message) {
   clearTimeout(timer); $('toast').textContent = message; $('toast').classList.add('visible');
   timer = setTimeout(() => $('toast').classList.remove('visible'),3500);
 }
+$('foreign-toggle').addEventListener('click',() => { foreignHidden = !foreignHidden; update(); });
 $('age-toggle').addEventListener('click',() => {
   const expanded = $('age-toggle').getAttribute('aria-expanded') !== 'true';
   $('age-toggle').setAttribute('aria-expanded',expanded);

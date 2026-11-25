@@ -21,3 +21,9 @@
 @media print{.age-toggle{display:none}.age-row.age-available{display:table-row!important}.age-row input{border:0;background:none}}
 
 .claim-note{font-size:10px;line-height:1.4;color:#7885a0;margin:0 0 8px}.claim-note[hidden]{display:none}
+
+.foreign-toggle{border:1px solid var(--line);border-radius:5px;background:white;color:var(--blue);padding:6px 9px;font-size:11px;font-weight:500;text-align:left}.foreign-toggle:hover{background:#f7f9ff}#fees-table [hidden]{display:none}#fees-table.foreign-hidden .label-column{width:50%}
+@media(max-width:480px){.foreign-toggle{font-size:9px;padding:5px 6px}}
+@media print{.foreign-toggle{display:none}}
+
+.signature{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 14px;margin-top:12px;color:#7885a0;font-size:10px;line-height:1.5;text-align:center}.signature strong{font-weight:600;color:#4d5e98}.signature-contact{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px}.signature a{color:#4d5e98;text-underline-offset:3px}

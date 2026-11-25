@@ -49,3 +49,5 @@ The age editor is collapsed by default behind “Set ages”. Its summary shows 
 `npm test` covers the owner's 21-local/4-foreign example, both rates and course thresholds, mixed-course shared cap, empty and foreign-only plans, recommendations, invalid inputs and reconciliation of totals. Core calculations run without network access; Google Fonts has system font fallbacks. Plans are represented in the URL; no personal information is collected or sent to a backend.
 
 - [TPGateway old SFEC FAQ](https://www.tpgateway.gov.sg/faq/skillsfuture-enterprise-credit-%28sfec%29): foreign employee claims, 90% reimbursement and drawdown order.
+
+The table header includes a Show/Hide foreign/work pass toggle. Hiding the column preserves pax and all calculations, with a note when hidden participants remain included in totals. Share links retain the visibility setting and print output respects it.
